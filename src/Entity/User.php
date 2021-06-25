@@ -112,6 +112,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $target_messages;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Token;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $TokenExpiration;
+
     public function __construct()
     {
         $this->friends = new ArrayCollection();
@@ -150,12 +160,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->getUserIdentifier();
     }
 
     /**
@@ -500,6 +507,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $targetMessage->setTargetId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->Token;
+    }
+
+    public function setToken(?string $Token): self
+    {
+        $this->Token = $Token;
+
+        return $this;
+    }
+
+    public function getTokenExpiration(): ?string
+    {
+        return $this->TokenExpiration;
+    }
+
+    public function setTokenExpiration(?string $TokenExpiration): self
+    {
+        $this->TokenExpiration = $TokenExpiration;
 
         return $this;
     }
