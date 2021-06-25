@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GamesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Games
      * @ORM\Column(type="string", length=255)
      */
     private $genre;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="game_id")
+     */
+    private $posts_game;
+
+    public function __construct()
+    {
+        $this->posts_game = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +98,36 @@ class Games
     public function setGenre(string $genre): self
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getPostsGame(): Collection
+    {
+        return $this->posts_game;
+    }
+
+    public function addPostsGame(Post $postsGame): self
+    {
+        if (!$this->posts_game->contains($postsGame)) {
+            $this->posts_game[] = $postsGame;
+            $postsGame->setGameId($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostsGame(Post $postsGame): self
+    {
+        if ($this->posts_game->removeElement($postsGame)) {
+            // set the owning side to null (unless already changed)
+            if ($postsGame->getGameId() === $this) {
+                $postsGame->setGameId(null);
+            }
+        }
 
         return $this;
     }

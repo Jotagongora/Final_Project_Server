@@ -87,10 +87,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $users;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="author_id")
+     */
+    private $posts;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="author_id")
+     */
+    private $comments;
+
+    /**
+     * @ORM\OneToMany(targetEntity=AddedGame::class, mappedBy="user_id")
+     */
+    private $addedGames;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="source_id")
+     */
+    private $messages;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="target_id")
+     */
+    private $target_messages;
+
     public function __construct()
     {
         $this->friends = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->addedGames = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->target_messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -319,6 +349,156 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->users->removeElement($user)) {
             $user->removeFriend($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->setAuthorId($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): self
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getAuthorId() === $this) {
+                $post->setAuthorId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setAuthorId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getAuthorId() === $this) {
+                $comment->setAuthorId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|AddedGame[]
+     */
+    public function getAddedGames(): Collection
+    {
+        return $this->addedGames;
+    }
+
+    public function addAddedGame(AddedGame $addedGame): self
+    {
+        if (!$this->addedGames->contains($addedGame)) {
+            $this->addedGames[] = $addedGame;
+            $addedGame->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddedGame(AddedGame $addedGame): self
+    {
+        if ($this->addedGames->removeElement($addedGame)) {
+            // set the owning side to null (unless already changed)
+            if ($addedGame->getUserId() === $this) {
+                $addedGame->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setSourceId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getSourceId() === $this) {
+                $message->setSourceId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getTargetMessages(): Collection
+    {
+        return $this->target_messages;
+    }
+
+    public function addTargetMessage(Message $targetMessage): self
+    {
+        if (!$this->target_messages->contains($targetMessage)) {
+            $this->target_messages[] = $targetMessage;
+            $targetMessage->setTargetId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTargetMessage(Message $targetMessage): self
+    {
+        if ($this->target_messages->removeElement($targetMessage)) {
+            // set the owning side to null (unless already changed)
+            if ($targetMessage->getTargetId() === $this) {
+                $targetMessage->setTargetId(null);
+            }
         }
 
         return $this;
