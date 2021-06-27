@@ -150,6 +150,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getUsernam(): ?string
+    {
+        return $this->username;
+    }
+
+
+
     /**
      * A visual identifier that represents this user.
      *
@@ -158,11 +165,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
-    }
-
-    public function getUsernam(): string
-    {
-        return (string) $this->username;
     }
 
     public function getUsername(): string
@@ -248,7 +250,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function setUsername(string $username): self
+    public function setUsernam(string $username): self
     {
         $this->username = $username;
 

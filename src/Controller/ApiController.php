@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
 
@@ -44,7 +45,7 @@ class ApiController extends AbstractController
     /**
      * @Route("", name="post", methods={"POST"})
      */
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $encoder): Response
     {
         $data = $request->request;
 
@@ -53,16 +54,20 @@ class ApiController extends AbstractController
 
         $user->setName($data->get('name'));
         $user->setLastname($data->get('lastname'));
-        $user->setUsername($data->get('username'));
+        $user->setUsernam($data->get('username'));
         $user->setEmail($data->get('email'));
-        $user->setPassword($data->get('password'));
+        $plainPassword = $data->get('password');
+        $encoded = $encoder->encodePassword($user, $plainPassword);
+
+        $user->setPassword($encoded);
+
         $user->setRoles(['ROLE_USER']);
         
         $entityManager->persist($user);
 
         $entityManager->flush();
 
-        return $response = new RedirectResponse('http://localhost:3000/');
+        return $response = new RedirectResponse('http://localhost:3000/Login');
         
     }
     
