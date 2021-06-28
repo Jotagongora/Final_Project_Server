@@ -43,7 +43,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("", name="post", methods={"POST"})
+     * @Route("/register", name="post", methods={"POST"})
      */
     public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $encoder): Response
     {
