@@ -118,9 +118,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $Token;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $TokenExpiration;
+    private $tokenExpiration;
 
     public function __construct()
     {
@@ -530,14 +530,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTokenExpiration(): ?string
+    public function getTokenExpiration(): ?\DateTimeInterface
     {
-        return $this->TokenExpiration;
+        return $this->tokenExpiration;
     }
 
-    public function setTokenExpiration(?string $TokenExpiration): self
+    public function setTokenExpiration(?\DateTimeInterface $tokenExpiration): self
     {
-        $this->TokenExpiration = $TokenExpiration;
+        $this->tokenExpiration = $tokenExpiration;
 
         return $this;
     }

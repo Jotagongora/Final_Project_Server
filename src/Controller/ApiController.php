@@ -57,8 +57,8 @@ class ApiController extends AbstractController
         $user->setUsernam($data->get('username'));
         $user->setEmail($data->get('email'));
         $plainPassword = $data->get('password');
+        
         $encoded = $encoder->encodePassword($user, $plainPassword);
-
         $user->setPassword($encoded);
 
         $user->setRoles(['ROLE_USER']);
