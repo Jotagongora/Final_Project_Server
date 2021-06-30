@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\UserNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,13 +35,9 @@ class ApiController extends AbstractController
     /**
      * @Route("/{id}", name="get", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function show(int $id): Response
+    public function showFriends(UserNormalize $userNormalize, User $user): Response
     {
-        return $this->json([
-            'method' => "GET",
-            'description' => "Devuelve un único recurso"
-
-        ]);
+        return $this->json($userNormalize->userNormalize($user));
     }
 
     /**
