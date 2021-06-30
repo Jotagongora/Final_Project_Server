@@ -23,14 +23,11 @@ class ApiController extends AbstractController
     /**
      * @Route("/", name="cget", methods={"GET"})
      */
-    public function index(): Response
-    {
-        return $this->json([
-            'method' => 'CGET',
-            'description' => 'Devuelve el listado del recurso completo'
+    // public function index(UserNormalize $userNormalize): Response
+    // {
+    //     return-$$this->jason($userNormalize->userNormalize($user));
 
-        ]);
-    }
+    // }
 
     /**
      * @Route("/{id}", name="get", methods={"GET"}, requirements={"id": "\d+"})

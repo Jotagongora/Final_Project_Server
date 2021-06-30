@@ -26,17 +26,15 @@ class UserNormalize {
             array_push($friends, [
                 'id' => $friend->getId(),    
                 'name' => $friend->getName(),
-                'posts' => [
-                    "author" => $friend->getPosts()->getAuthorId()
-                    
-                        ]       
-                    ]);
-                }
+                'username' => $friend->getUsernam()
+                ]);
+            }
 
         foreach($user->getUsers() as $friend) {
             array_push($friends, [
                 'id' => $friend->getId(),    
-                'name' => $friend->getName(),    
+                'name' => $friend->getName(),
+                'username' => $friend->getUsernam() 
             ]);
         }
 
@@ -48,7 +46,8 @@ class UserNormalize {
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
-            'friends' => $friends
+            'friends' => $friends,
+            'posts' => $user->getPosts()
         ];
     }
 }
