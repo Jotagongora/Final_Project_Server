@@ -21,6 +21,7 @@ class UserNormalize {
      */
     public function userNormalize (User $user): ? array {
         $friends = [];
+        $posts = [];
 
         foreach($user->getFriends() as $friend) {
             array_push($friends, [
@@ -35,8 +36,24 @@ class UserNormalize {
                 'id' => $friend->getId(),    
                 'name' => $friend->getName(),
                 'username' => $friend->getUsernam() 
-            ]);
+                ]);
+            }
+
+        foreach($user->getPosts() as $post) {
+             $postImg = '';
+        if($post->getPostImage()) {
+            $postImg = $this->urlHelper->getAbsoluteUrl('/post/post_img/'.$post->getPostImage());
         }
+
+            array_push($posts, [
+                'title' => $post->getTitle(),    
+                'created_at' => $post->getStartAt(),
+                'content_text' => $post->getContentText(),
+                'post_img' => $post->getPostImage()
+                ]);
+            }
+
+       
 
         // $avatar = '';
         // if($employee->getAvatar()) {
@@ -47,7 +64,7 @@ class UserNormalize {
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
             'friends' => $friends,
-            'posts' => $user->getPosts()
+            'posts' => $posts
         ];
     }
 }
