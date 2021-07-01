@@ -49,7 +49,7 @@ class UserNormalize {
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getStartAt(),
                 'content_text' => $post->getContentText(),
-                'post_img' => $post->getPostImage()
+                'post_img' => $postImg
                 ]);
             }
 
