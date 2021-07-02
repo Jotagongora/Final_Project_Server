@@ -39,22 +39,27 @@ class UserNormalize {
                 ]);
             }
 
+            $avatar = "";
+            if($user->getAvatar()) {
+                $avatar = $this->urlHelper->getAbsoluteUrl('/profile/profile_img/'.$user->getAvatar());
+            } 
+
         foreach($user->getPosts() as $post) {
              $postImg = '';
         if($post->getPostImage()) {
             $postImg = $this->urlHelper->getAbsoluteUrl('/post/post_img/'.$post->getPostImage());
         }
 
+
             array_push($posts, [
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getStartAt(),
                 'content_text' => $post->getContentText(),
-                'post_img' => $postImg
+                'post_img' => $postImg,
+                'post_avatar' => $avatar
                 ]);
             }
-
-       
-
+        
         // $avatar = '';
         // if($employee->getAvatar()) {
         //     $avatar = $this->urlHelper->getAbsoluteUrl('/employee/avatar/'.$employee->getAvatar());
@@ -63,6 +68,7 @@ class UserNormalize {
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
+            'avatar' => $avatar,
             'friends' => $friends,
             'posts' => $posts
         ];
