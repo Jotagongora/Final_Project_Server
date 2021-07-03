@@ -50,8 +50,10 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
+        
         // For example:
-        return new RedirectResponse($this->urlGenerator->generate('http:localhost:3000/Login'));
+        
+        return new RedirectResponse($this->urlGenerator->generate('http:localhost:3000/login'));
         
     }
 
@@ -59,4 +61,5 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
+
 }

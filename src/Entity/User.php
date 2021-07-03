@@ -325,6 +325,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->friends;
     }
 
+
     public function addFriend(self $friend): self
     {
         if (!$this->friends->contains($friend)) {

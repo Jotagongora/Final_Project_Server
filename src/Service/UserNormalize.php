@@ -27,7 +27,8 @@ class UserNormalize {
             array_push($friends, [
                 'id' => $friend->getId(),    
                 'name' => $friend->getName(),
-                'username' => $friend->getUsernam()
+                'username' => $friend->getUsernam(),
+                'avatar' => $this->urlHelper->getAbsoluteUrl('/profile/profile_img/'.$friend->getAvatar())
                 ]);
             }
 
