@@ -36,7 +36,7 @@ class UserNormalize {
             array_push($friends, [
                 'id' => $friend->getId(),    
                 'name' => $friend->getName(),
-                'username' => $friend->getUsernam() 
+                'username' => $friend->getUsernam(),
                 ]);
             }
 
