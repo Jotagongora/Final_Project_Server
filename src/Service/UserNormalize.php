@@ -60,12 +60,6 @@ class UserNormalize {
                 'avatar' => $this->urlHelper->getAbsoluteUrl('/profile/profile_img/'.$friend->getAvatar()),
                 'friends' => $friends2
                 ]);
-                
-
-                
-                
-
-                
             }
 
             $avatar = "";

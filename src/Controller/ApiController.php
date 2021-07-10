@@ -2,20 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Service\UserNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
-
-
-    /**
+/**
      * @Route("/api", name="api_")
      */
 class ApiController extends AbstractController
@@ -65,5 +65,57 @@ class ApiController extends AbstractController
         return $response = new RedirectResponse('http://localhost:3000/Login');
         
     }
+
+     /**
+     * @Route("/addPost", name="post", methods={"POST"})
+     */
+    public function addPost(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize, SluggerInterface $slug): Response
+    {
+        $data = $request->request;
+
+        $now = new \DateTimeImmutable();
+
+        $post = new Post(); 
+
+        $post->setTitle($data->get('newTitlePost'));
+        $post->setContentText($data->get('newContentPost'));
+        $post->setAuthorId($this->getUser());
+        $post->setStartAt($now);
+
+        if($request->files->has('postImage')) {
+            $imageFile = $request->files->get('postImage');
+
+            $imageOriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            $safeImageFilename = $slug->slug($imageOriginalFilename);
+
+            $imageNewOriginalFilename = $safeImageFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+            $post->setPostImage($imageNewOriginalFilename);
+
+            try {
+                $imageFile->move($request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'post/post_img',
+                $imageNewOriginalFilename
+                
+            );
+
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+        }
+
+        
+
+
+        
+        $entityManager->persist($post);
+
+        $entityManager->flush();
+
+        return $this->json($userNormalize->userNormalize($this->getUser()));
+
+        
+    }
+    
     
 }
