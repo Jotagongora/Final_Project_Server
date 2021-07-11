@@ -73,6 +73,8 @@ class ApiController extends AbstractController
     {
         $data = $request->request;
 
+        dump($data);
+
         $now = new \DateTimeImmutable();
 
         $post = new Post(); 
