@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Service\UserNormalize;
@@ -73,8 +74,6 @@ class ApiController extends AbstractController
     {
         $data = $request->request;
 
-        dump($data);
-
         $now = new \DateTimeImmutable();
 
         $post = new Post(); 
@@ -117,6 +116,33 @@ class ApiController extends AbstractController
         return $this->json($userNormalize->userNormalize($this->getUser()));
 
         
+    }
+
+     /**
+     * @Route("/addComment", name="post", methods={"POST"})
+     */
+    public function addComment(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize): Response
+    {
+        $data = $request->request;
+
+        $comment = new Comment();
+
+        $now = new \DateTimeImmutable();
+
+
+        $comment->setContentText($data->get('commentInput'));
+        $comment->setAuthorId($this->getUser());
+        $comment->setPostId($data->get('postAuthorId'));
+        $comment->setCreatedAt($now);
+
+        dump($data);
+
+        
+        $entityManager->persist($comment);
+
+        $entityManager->flush();
+
+        return $this->json($userNormalize->userNormalize($this->getUser()));
     }
     
     

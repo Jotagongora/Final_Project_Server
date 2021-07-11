@@ -74,12 +74,13 @@ class UserNormalize {
         }
 
 
-            array_push($posts, [
+            array_unshift($posts, [
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getStartAt(),
                 'content_text' => $post->getContentText(),
                 'post_img' => $postImg,
-                'post_avatar' => $avatar
+                'post_avatar' => $avatar,
+                'post_id' => $post->getId()
                 ]);
             }
         
