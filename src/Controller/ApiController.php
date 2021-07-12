@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Repository\PostRepository;
 use App\Service\UserNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -119,20 +120,22 @@ class ApiController extends AbstractController
     }
 
      /**
-     * @Route("/addComment", name="post", methods={"POST"})
+     * @Route("/addComment", name="comment", methods={"POST"})
      */
-    public function addComment(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize): Response
+    public function addComment(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize, PostRepository $postRepository): Response
     {
         $data = $request->request;
 
         $comment = new Comment();
+
+        $post = $postRepository->find($data->get('postId'));
 
         $now = new \DateTimeImmutable();
 
 
         $comment->setContentText($data->get('commentInput'));
         $comment->setAuthorId($this->getUser());
-        $comment->setPostId($data->get('postAuthorId'));
+        $comment->setPostId($post);
         $comment->setCreatedAt($now);
 
         dump($data);
