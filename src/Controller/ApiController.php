@@ -138,8 +138,6 @@ class ApiController extends AbstractController
         $comment->setPostId($post);
         $comment->setCreatedAt($now);
 
-        dump($data);
-
         
         $entityManager->persist($comment);
 

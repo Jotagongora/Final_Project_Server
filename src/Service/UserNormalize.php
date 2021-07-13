@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\UrlHelper;
 use App\Entity\Post;
+use App\Entity\Comment;
 
 class UserNormalize {
     private $urlHelper;
@@ -23,6 +24,8 @@ class UserNormalize {
         $friends = [];
         $posts = [];
         $friends2 = [];
+        
+        
 
         foreach($user->getFriends() as $friend) {
 
@@ -69,10 +72,23 @@ class UserNormalize {
 
         foreach($user->getPosts() as $post) {
              $postImg = '';
+             
+            
+             $comments = [];
+
         if($post->getPostImage()) {
             $postImg = $this->urlHelper->getAbsoluteUrl('/post/post_img/'.$post->getPostImage());
         }
 
+            foreach($post->getPostComments() as $comment) {
+                
+                array_unshift($comments, [
+                    'author' => $comment->getAuthorId()->getUsernam(),
+                    'content_text' => $comment->getContentText(),
+                    'created_at' => $comment->getCreatedAt()
+                ]);   
+            
+            }
 
             array_unshift($posts, [
                 'title' => $post->getTitle(),    
@@ -80,9 +96,11 @@ class UserNormalize {
                 'content_text' => $post->getContentText(),
                 'post_img' => $postImg,
                 'post_avatar' => $avatar,
-                'post_id' => $post->getId()
+                'post_id' => $post->getId(),
+                'comments' => $comments
                 ]);
             }
+        
         
         // $avatar = '';
         // if($employee->getAvatar()) {
