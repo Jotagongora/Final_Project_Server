@@ -154,6 +154,8 @@ class Post
     {
         if (!$this->likes->contains($like)) {
             $this->likes[] = $like;
+        } else {
+            $this->likes->removeElement($like);
         }
 
         return $this;

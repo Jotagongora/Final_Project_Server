@@ -97,6 +97,7 @@ class UserNormalize {
                 'post_img' => $postImg,
                 'post_avatar' => $avatar,
                 'post_id' => $post->getId(),
+                'likes' => count($post->getLikes()),
                 'comments' => $comments
                 ]);
             }

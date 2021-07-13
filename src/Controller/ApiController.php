@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\PostRepository;
+use App\Repository\UserRepository;
 use App\Service\UserNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -140,6 +141,24 @@ class ApiController extends AbstractController
 
         
         $entityManager->persist($comment);
+
+        $entityManager->flush();
+
+        return $this->json($userNormalize->userNormalize($this->getUser()));
+    }
+
+    /**
+     * @Route("/addLike", name="like", methods={"POST"})
+     */
+    public function newLike(Request $request, EntityManagerInterface $entityManager,UserNormalize $userNormalize, PostRepository $postRepository): Response
+    {
+        $data = $request->request;
+
+        $post = $postRepository->find($data->get('post'));
+
+        $post->addLike($this->getUser());
+
+        $entityManager->persist($post);
 
         $entityManager->flush();
 
