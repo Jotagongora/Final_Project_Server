@@ -40,6 +40,14 @@ class ApiController extends AbstractController
         return $this->json($userNormalize->userNormalize($user));
     }
 
+     /**
+     * @Route("/Friend/{id}", name="fget", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function showFriend(UserNormalize $userNormalize, User $user): Response
+    {
+        return $this->json($userNormalize->userNormalize($user));
+    }
+
     /**
      * @Route("/register", name="post", methods={"POST"})
      */
