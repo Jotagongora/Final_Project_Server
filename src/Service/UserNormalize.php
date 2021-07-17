@@ -24,8 +24,15 @@ class UserNormalize {
         $friends = [];
         $posts = [];
         $friends2 = [];
+        $games = [];
         
-        
+        foreach ($user->getAddedGames() as $game) {
+            array_push($games, [
+                'id' => $game->getGameId()->getId(),
+                'title' => $game->getGameId()->getTitle(),
+                'image' => $game->getGameId()->getGameUrl(),
+            ]);
+        };
 
         foreach($user->getFriends() as $friend) {
 
@@ -90,6 +97,7 @@ class UserNormalize {
             
             }
 
+
             array_unshift($posts, [
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getStartAt(),
@@ -112,6 +120,7 @@ class UserNormalize {
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
             'avatar' => $avatar,
+            'library' => $games,
             'friends' => $friends,
             'posts' => $posts
         ];

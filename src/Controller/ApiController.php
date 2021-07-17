@@ -95,16 +95,19 @@ class ApiController extends AbstractController
      /**
      * @Route("/addPost", name="post", methods={"POST"})
      */
-    public function addPost(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize, SluggerInterface $slug): Response
+    public function addPost(Request $request, EntityManagerInterface $entityManager, UserNormalize $userNormalize, SluggerInterface $slug, GamesRepository $gamesRepository): Response
     {
         $data = $request->request;
 
         $now = new \DateTimeImmutable();
 
-        $post = new Post(); 
+        $post = new Post();
+
+        $game = $gamesRepository->find($data->get('game'));
 
         $post->setTitle($data->get('newTitlePost'));
         $post->setContentText($data->get('newContentPost'));
+        $post->setGameId($game);
         $post->setAuthorId($this->getUser());
         $post->setStartAt($now);
 
@@ -198,8 +201,6 @@ class ApiController extends AbstractController
         $gameId = $gamesRepository->find($data->get('gameId'));
 
         $gameAlreadyExist = $addedGameRepository->findByGameId($gameId);
-
-        dump($gameAlreadyExist);
 
         if ($gameAlreadyExist === null) {
 
