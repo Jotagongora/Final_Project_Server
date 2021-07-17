@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\AddedGame;
 use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Repository\AddedGameRepository;
+use App\Repository\GamesRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use App\Service\GameNormalize;
 use App\Service\UserNormalize;
+use ContainerZ3R1Te2\getGameNormalizeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -46,6 +51,16 @@ class ApiController extends AbstractController
     public function showFriend(UserNormalize $userNormalize, User $user): Response
     {
         return $this->json($userNormalize->userNormalize($user));
+    }
+
+    /**
+     * @Route("/games", name="games", methods={"GET"})
+     */
+    public function games(GamesRepository $gamesRepository): Response
+    {
+        $games = $gamesRepository->findAll();
+
+        return $this->json($games);
     }
 
     /**
@@ -172,6 +187,44 @@ class ApiController extends AbstractController
 
         return $this->json($userNormalize->userNormalize($this->getUser()));
     }
+
+     /**
+     * @Route("/addGame", name="add_game", methods={"POST"})
+     */
+    public function addGameLibrary(Request $request, EntityManagerInterface $entityManager, GamesRepository $gamesRepository, AddedGameRepository $addedGameRepository): Response
+    {
+        $data = $request->request;
+
+        $gameId = $gamesRepository->find($data->get('gameId'));
+
+        $gameAlreadyExist = $addedGameRepository->findByGameId($gameId);
+
+        dump($gameAlreadyExist);
+
+        if ($gameAlreadyExist === null) {
+
+        $game = new AddedGame();
+
+        $now = new \DateTimeImmutable();
+
+        $game->setUserId($this->getUser());
+        $game->setGameId($gameId);
+        $game->setAddedGameDate($now);
+
+
+        $entityManager->persist($game);
+
+        $entityManager->flush();
+
+        } else {
+            return $this->json($data);
+        }
+
+        return $this->json($data);
+        
+    }
+
+    
     
     
 }

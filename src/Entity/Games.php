@@ -66,9 +66,21 @@ class Games
         return $this;
     }
 
+    public function getUrl(string $game_img): ?string
+    {
+        return "http://localhost:8000/game/".$game_img;
+    }
+
     public function getGameImg(): ?string
     {
-        return $this->game_img;
+       return $this->game_img;
+        
+    }
+
+    public function getGameUrl(): ?string
+    {
+       return $this->getUrl($this->getGameImg());
+        
     }
 
     public function setGameImg(string $game_img): self

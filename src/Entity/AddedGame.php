@@ -72,4 +72,5 @@ class AddedGame
 
         return $this;
     }
+    
 }
