@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AddedGame;
 use App\Entity\Comment;
 use App\Entity\Games;
+use App\Entity\Photos;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\AddedGameRepository;
@@ -104,15 +105,16 @@ class ApiController extends AbstractController
 
         $post = new Post();
 
-        $game = $gamesRepository->find($data->get('game'));
+        $gameId = $gamesRepository->find($data->get('game'));
 
         $post->setTitle($data->get('newTitlePost'));
         $post->setContentText($data->get('newContentPost'));
-        $post->setGameId($game);
+        $post->setGameId($gameId);
         $post->setAuthorId($this->getUser());
         $post->setStartAt($now);
 
         if($request->files->has('postImage')) {
+
             $imageFile = $request->files->get('postImage');
 
             $imageOriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -311,5 +313,45 @@ class ApiController extends AbstractController
     }
     
     
+    /**
+     * @Route("/photos", name="photos", methods={"POST"})
+     */
+    public function sendPhoto(Request $request, EntityManagerInterface $entityManager,UserNormalize $userNormalize, SluggerInterface $slug): Response
+    { 
+        
+        if($request->files->has('file-upload')) {
+
+            $imageFile = $request->files->get('file-upload');
+
+            $imageOriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            $safeImageFilename = $slug->slug($imageOriginalFilename);
+
+            $imageNewOriginalFilename = $safeImageFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+            $photo = new Photos;
+
+            $photo->setImage($imageNewOriginalFilename);
+
+            $photo->setUser($this->getUser());
+
+            $entityManager->persist($photo);
+
+            $entityManager->flush();
+
+            try {
+                $imageFile->move($request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'photos/photo_img',
+                $imageNewOriginalFilename
+                
+            );
+
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+
+        }
+
+        return $this->json($userNormalize->userNormalize($this->getUser()));
+    }
     
 }

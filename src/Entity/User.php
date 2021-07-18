@@ -122,6 +122,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $tokenExpiration;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Photos::class, mappedBy="user")
+     */
+    private $photos;
+
     public function __construct()
     {
         $this->friends = new ArrayCollection();
@@ -131,6 +136,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->addedGames = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->target_messages = new ArrayCollection();
+        $this->photos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -545,6 +551,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTokenExpiration(?\DateTimeInterface $tokenExpiration): self
     {
         $this->tokenExpiration = $tokenExpiration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photos[]
+     */
+    public function getPhotos(): Collection
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(Photos $photo): self
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos[] = $photo;
+            $photo->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoto(Photos $photo): self
+    {
+        if ($this->photos->removeElement($photo)) {
+            // set the owning side to null (unless already changed)
+            if ($photo->getUser() === $this) {
+                $photo->setUser(null);
+            }
+        }
 
         return $this;
     }

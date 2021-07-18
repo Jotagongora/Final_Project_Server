@@ -25,6 +25,7 @@ class UserNormalize {
         $posts = [];
         $friends2 = [];
         $games = [];
+        $photos = [];
         
         foreach ($user->getAddedGames() as $game) {
             array_push($games, [
@@ -110,16 +111,18 @@ class UserNormalize {
                 ]);
             }
         
+        foreach($user->getPhotos() as $photo) {
+            array_unshift($photos, [
+                'image' => $this->urlHelper->getAbsoluteUrl('/photos/photo_img/'.$photo->getImage())
+            ]);
+        }
         
-        // $avatar = '';
-        // if($employee->getAvatar()) {
-        //     $avatar = $this->urlHelper->getAbsoluteUrl('/employee/avatar/'.$employee->getAvatar());
-        // }
         return [
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
             'avatar' => $avatar,
+            'photos' => $photos,
             'bg_image' => $this->urlHelper->getAbsoluteUrl('/profile/profile_img/'.$user->getBgImage()),
             'library' => $games,
             'friends' => $friends,
