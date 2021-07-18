@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\AddedGame;
 use App\Entity\Comment;
+use App\Entity\Games;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\AddedGameRepository;
@@ -56,7 +57,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/games", name="games", methods={"GET"})
      */
-    public function games(GamesRepository $gamesRepository): Response
+    public function games(GamesRepository $gamesRepository, GameNormalize $gameNormalize): Response
     {
         $games = $gamesRepository->findAll();
 

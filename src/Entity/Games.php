@@ -117,9 +117,9 @@ class Games
     /**
      * @return Collection|Post[]
      */
-    public function getPostsGame(): Collection
+    public function getPostsGame(): Int
     {
-        return $this->posts_game;
+        return count($this->posts_game);
     }
 
     public function addPostsGame(Post $postsGame): self
