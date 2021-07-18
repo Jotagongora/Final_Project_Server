@@ -226,6 +226,89 @@ class ApiController extends AbstractController
         
     }
 
+    /**
+     * @Route("/edit", name="edit", methods={"POST"})
+     */
+    public function editProfile(Request $request, EntityManagerInterface $entityManager,UserNormalize $userNormalize, SluggerInterface $slug): Response
+    {
+        $data = $request->request;
+
+        if($data->get('username')) {
+            $username = $data->get('username');
+
+    
+            
+            $user = $this->getUser();
+
+            $user->setUsernam($username);
+
+            $entityManager->persist($user);
+
+            $entityManager->flush();
+        }
+
+        
+        
+        if($request->files->has('file-avatar')) {
+            $imageFile = $request->files->get('file-avatar');
+
+            $imageOriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            $safeImageFilename = $slug->slug($imageOriginalFilename);
+
+            $imageNewOriginalFilename = $safeImageFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+            $user = $this->getUser();
+
+            $user->setAvatar($imageNewOriginalFilename);
+
+            $entityManager->persist($user);
+
+            $entityManager->flush();
+
+            try {
+                $imageFile->move($request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'profile/profile_img',
+                $imageNewOriginalFilename
+                
+            );
+
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+
+        }
+
+        if($request->files->has('file-upload')) {
+            $imageFile = $request->files->get('file-upload');
+
+            $imageOriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            $safeImageFilename = $slug->slug($imageOriginalFilename);
+
+            $imageNewOriginalFilename = $safeImageFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+            $user = $this->getUser();
+
+            $user->setBgImage($imageNewOriginalFilename);
+
+            $entityManager->persist($user);
+
+            $entityManager->flush();
+
+            try {
+                $imageFile->move($request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'profile/profile_img',
+                $imageNewOriginalFilename
+                
+            );
+
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+
+        }
+
+        return $this->json($userNormalize->userNormalize($this->getUser()));
+    }
     
     
     
