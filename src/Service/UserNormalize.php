@@ -120,6 +120,7 @@ class UserNormalize {
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),
             'avatar' => $avatar,
+            'bg_image' => $this->urlHelper->getAbsoluteUrl('/profile/profile_img/'.$user->getBgImage()),
             'library' => $games,
             'friends' => $friends,
             'posts' => $posts
