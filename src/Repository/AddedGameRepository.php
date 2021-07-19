@@ -46,5 +46,15 @@ class AddedGameRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findByUserId($id): ?AddedGame
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.user_id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
     
 }

@@ -66,7 +66,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="post", methods={"POST"})
+     * @Route("/register", name="register", methods={"POST"})
      */
     public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $encoder): Response
     {
@@ -199,6 +199,8 @@ class ApiController extends AbstractController
      */
     public function addGameLibrary(Request $request, EntityManagerInterface $entityManager, GamesRepository $gamesRepository, AddedGameRepository $addedGameRepository): Response
     {
+        $response = new Response;
+
         $data = $request->request;
 
         $gameId = $gamesRepository->find($data->get('gameId'));
@@ -224,7 +226,7 @@ class ApiController extends AbstractController
             return $this->json($data);
         }
 
-        return $this->json($data);
+        return $response->setStatusCode(Response::HTTP_CREATED) ;
         
     }
 
