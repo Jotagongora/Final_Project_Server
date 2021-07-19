@@ -43,12 +43,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $queryBuilder->where(
             $queryBuilder->expr()->orX(
-                $queryBuilder->expr()->like('e.name' , ':term'),
-                $queryBuilder->expr()->like('e.email' , ':term'),
-                $queryBuilder->expr()->like('e.city' , ':term')
+                $queryBuilder->expr()->like('e.username' , ':search'),
             )
         )
-        ->setParameter('term', '%'.$term.'%')
+        ->setParameter('search', '%'.$term.'%')
         ->orderBy('e.id', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();

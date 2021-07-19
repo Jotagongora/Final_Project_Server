@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\AddedGame;
 use App\Entity\Comment;
-use App\Entity\Games;
 use App\Entity\Photos;
 use App\Entity\Post;
 use App\Entity\User;
@@ -12,9 +11,9 @@ use App\Repository\AddedGameRepository;
 use App\Repository\GamesRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use App\Service\FriendNormalize;
 use App\Service\GameNormalize;
 use App\Service\UserNormalize;
-use ContainerZ3R1Te2\getGameNormalizeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -33,19 +32,38 @@ class ApiController extends AbstractController
     /**
      * @Route("/", name="cget", methods={"GET"})
      */
-    // public function index(UserNormalize $userNormalize): Response
-    // {
-    //     return-$$this->jason($userNormalize->userNormalize($user));
+    public function index(UserNormalize $userNormalize, UserRepository $userRepository): Response
+    {
+        $result = $userRepository->findAll();
 
-    // }
+        $data = [];
+
+        foreach($result as $user) {
+            $data[] = $userNormalize->userNormalize($user);
+        }
+
+        return $this->json($data);
+
+    }
 
     /**
-     * @Route("/{id}", name="get", methods={"GET"}, requirements={"id": "\d+"})
+     * @Route("/{id}", name="get", methods={"GET"})
      */
-    public function showFriends(UserNormalize $userNormalize, User $user): Response
+    public function showUser(UserNormalize $userNormalize, User $user): Response
     {
         return $this->json($userNormalize->userNormalize($user));
     }
+
+     /**
+     * @Route("/friends/{id}", name="cfget", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function showFriends(FriendNormalize $friendNormalize, UserRepository $userRepository): Response
+    {
+        $friends = $this->getUser();
+
+        return $this->json($friendNormalize->friendNormalize($friends));
+    }
+    
 
      /**
      * @Route("/Friend/{id}", name="fget", methods={"GET"}, requirements={"id": "\d+"})
@@ -58,8 +76,20 @@ class ApiController extends AbstractController
     /**
      * @Route("/games", name="games", methods={"GET"})
      */
-    public function games(GamesRepository $gamesRepository, GameNormalize $gameNormalize): Response
+    public function games(Request $request, GamesRepository $gamesRepository, GameNormalize $gameNormalize): Response
     {
+        if($request->query->has('search')) {
+            $result = $gamesRepository->findByTerm($request->query->get('search'));
+
+            $data = [];
+
+            foreach($result as $game) {
+                $data[] = $game;   
+            }
+    
+            return $this->json($data);
+        }
+
         $games = $gamesRepository->findAll();
 
         return $this->json($games);
@@ -79,6 +109,8 @@ class ApiController extends AbstractController
         $user->setLastname($data->get('lastname'));
         $user->setUsernam($data->get('username'));
         $user->setEmail($data->get('email'));
+        $user->setAvatar("emptyProfile.png");
+        $user->setBgImage("emptyProfile.png");
         $plainPassword = $data->get('password');
         
         $encoded = $encoder->encodePassword($user, $plainPassword);
@@ -135,16 +167,14 @@ class ApiController extends AbstractController
                 throw new \Exception($e->getMessage());
             }
         }
-
-        
-
-
         
         $entityManager->persist($post);
 
         $entityManager->flush();
 
-        return $this->json($userNormalize->userNormalize($this->getUser()));
+        $response = new Response;
+
+        return $response->setStatusCode(Response::HTTP_CREATED) ;
 
         
     }
@@ -173,7 +203,9 @@ class ApiController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json($userNormalize->userNormalize($this->getUser()));
+        $response = new Response;
+
+        return $response->setStatusCode(Response::HTTP_CREATED) ;
     }
 
     /**
@@ -191,7 +223,9 @@ class ApiController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json($userNormalize->userNormalize($this->getUser()));
+        $response = new Response;
+
+        return $response->setStatusCode(Response::HTTP_CREATED) ;
     }
 
      /**
@@ -353,7 +387,9 @@ class ApiController extends AbstractController
 
         }
 
-        return $this->json($userNormalize->userNormalize($this->getUser()));
+        $response = new Response;
+
+        return $response->setStatusCode(Response::HTTP_CREATED) ;
     }
     
 }

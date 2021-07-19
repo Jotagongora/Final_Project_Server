@@ -19,6 +19,21 @@ class GamesRepository extends ServiceEntityRepository
         parent::__construct($registry, Games::class);
     }
 
+    public function findByTerm(string $term)
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder->where(
+            $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->like('e.title' , ':search'),
+            )
+        )
+        ->setParameter('search', '%'.$term.'%')
+        ->orderBy('e.id', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     // /**
     //  * @return Games[] Returns an array of Games objects
     //  */

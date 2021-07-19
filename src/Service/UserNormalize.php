@@ -91,7 +91,9 @@ class UserNormalize {
             foreach($post->getPostComments() as $comment) {
                 
                 array_unshift($comments, [
+                    'comment_id' => $comment->getId(),
                     'author' => $comment->getAuthorId()->getUsernam(),
+                    'author_id' => $comment->getAuthorId()->getId(),
                     'content_text' => $comment->getContentText(),
                     'created_at' => $comment->getCreatedAt()
                 ]);   
