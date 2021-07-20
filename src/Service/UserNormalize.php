@@ -120,6 +120,7 @@ class UserNormalize {
         }
         
         return [
+            'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'username' => $user->getUsernam(),

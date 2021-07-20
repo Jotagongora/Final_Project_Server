@@ -141,6 +141,31 @@ class ApiController extends AbstractController
         
     }
 
+    /**
+     * @Route("/addFavorite", name="add_favorite", methods={"POST"})
+     */
+    public function addFavorite(Request $request, EntityManagerInterface $entityManager,UserRepository $userRepository): Response
+    {
+        $data = $request->request;
+
+        dump($data);
+
+        $favorite = $userRepository->find($data->get('favoriteId'));
+
+        $user = $this->getUser();
+
+        $user->addFriend($favorite);
+
+        $entityManager->persist($user);
+
+        $entityManager->flush();
+
+        $response = new Response;
+
+        return $response->setStatusCode(Response::HTTP_ACCEPTED);
+        
+    }
+
      /**
      * @Route("/addPost", name="post", methods={"POST"})
      */
