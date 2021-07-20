@@ -104,29 +104,28 @@ class ApiController extends AbstractController
      */
     public function showFriendsPrueba(UserNormalize $userNormalize, Request $request,FriendNormalize $friendNormalize, UserRepository $userRepository): Response
     {
-       
+
         $user = $this->getUser();
 
-        $friends = [];
+        if($request->query->has('search')) {
 
+            foreach($user->getFriends() as $friend) {
 
-        foreach ($user->getFriends() as $friend) {
-            if ($friend->findByTerm($request->query->get('search'))) {
+                $result = $friend->findByTerm($request->query->get('search'));
+            }
 
             
-            array_push($friends, [$userNormalize->userNormalize(($friend))]);
+
+            $data = [];
+
+            foreach($result as $friend) {
+                $data[] = $userNormalize->userNormalize($friend);   
             }
+    
+            return $this->json($data);
         }
 
-        foreach ($user->getFriends() as $friend) {
-            if ($friend->findByTerm($request->query->get('search'))) {
-
-            
-            array_push($friends, [$userNormalize->userNormalize(($friend))]);
-            }
-        }
-
-        return $this->json($friends);
+        return $this->json($userNormalize->userNormalize($user));
     }
     
 
