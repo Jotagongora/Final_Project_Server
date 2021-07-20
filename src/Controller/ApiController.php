@@ -13,6 +13,8 @@ use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Service\FriendNormalize;
 use App\Service\GameNormalize;
+use App\Entity\Games;
+use ContainerZ3R1Te2\getGameNormalizeService;
 use App\Service\UserNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-/**
+    /**
      * @Route("/api", name="api_")
      */
 class ApiController extends AbstractController
@@ -32,8 +34,21 @@ class ApiController extends AbstractController
     /**
      * @Route("/", name="cget", methods={"GET"})
      */
-    public function index(UserNormalize $userNormalize, UserRepository $userRepository): Response
+    public function index(Request $request,UserNormalize $userNormalize, UserRepository $userRepository): Response
     {
+
+        if($request->query->has('search')) {
+            $result = $userRepository->findByTerm($request->query->get('search'));
+
+            $data = [];
+
+            foreach($result as $user) {
+                $data[] = $userNormalize->userNormalize($user);   
+            }
+    
+            return $this->json($data);
+        }
+
         $result = $userRepository->findAll();
 
         $data = [];
@@ -47,7 +62,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="get", methods={"GET"})
+     * @Route("/{id}", name="get", methods={"GET"}, requirements={"id": "\d+"})
      */
     public function showUser(UserNormalize $userNormalize, User $user): Response
     {
@@ -57,7 +72,7 @@ class ApiController extends AbstractController
      /**
      * @Route("/friends/{id}", name="cfget", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function showFriends(FriendNormalize $friendNormalize, UserRepository $userRepository): Response
+    public function showFriends(FriendNormalize $friendNormalize): Response
     {
         $friends = $this->getUser();
 
@@ -76,7 +91,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/games", name="games", methods={"GET"})
      */
-    public function games(Request $request, GamesRepository $gamesRepository, GameNormalize $gameNormalize): Response
+    public function games(Request $request, GamesRepository $gamesRepository): Response
     {
         if($request->query->has('search')) {
             $result = $gamesRepository->findByTerm($request->query->get('search'));
@@ -390,6 +405,27 @@ class ApiController extends AbstractController
         $response = new Response;
 
         return $response->setStatusCode(Response::HTTP_CREATED) ;
+    }
+
+    /**
+     * @Route("/remove", name="remove_post", methods={"POST"})
+     */
+    public function removePost(Request $request, EntityManagerInterface $entityManager, PostRepository $postRepository, AddedGameRepository $addedGameRepository): Response
+    {
+        $response = new Response;
+
+        $data = $request->request;
+
+        $post = $postRepository->find($data->get('postId'));
+
+        $this->getUser()->removePost($post);
+
+        $entityManager->persist($post);
+
+        $entityManager->flush();
+
+        return $response->setStatusCode(Response::HTTP_ACCEPTED) ;
+        
     }
     
 }
