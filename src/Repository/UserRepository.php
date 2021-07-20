@@ -53,21 +53,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function findFriend(string $term)
-    {
-        $queryBuilder = $this->getFriends()->createQueryBuilder('e');
-
-        $queryBuilder->where(
-            $queryBuilder->expr()->orX(
-                $queryBuilder->expr()->like('e.username' , ':search')
-            )
-        )
-        ->setParameter('search', '%'.$term.'%')
-        ->orderBy('e.id', 'ASC');
-
-        return $queryBuilder->getQuery()->getResult();
-    }
-
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

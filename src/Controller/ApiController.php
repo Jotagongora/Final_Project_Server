@@ -111,11 +111,19 @@ class ApiController extends AbstractController
 
 
         foreach ($user->getFriends() as $friend) {
+            if ($friend->findByTerm($request->query->get('search'))) {
+
+            
             array_push($friends, [$userNormalize->userNormalize(($friend))]);
+            }
         }
 
-        foreach ($user->getUsers() as $friend) {
+        foreach ($user->getFriends() as $friend) {
+            if ($friend->findByTerm($request->query->get('search'))) {
+
+            
             array_push($friends, [$userNormalize->userNormalize(($friend))]);
+            }
         }
 
         return $this->json($friends);
