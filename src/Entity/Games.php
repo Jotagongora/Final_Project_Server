@@ -44,6 +44,11 @@ class Games
      */
     private $posts_game;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $releaseD;
+
     public function __construct()
     {
         $this->posts_game = new ArrayCollection();
@@ -117,10 +122,15 @@ class Games
     /**
      * @return Collection|Post[]
      */
-    public function getPostsGame(): Int
+    public function getPostsGame(): Collection
     {
-        return count($this->posts_game);
+        return $this->posts_game;
     }
+
+    // public function getPostGame(): Collection
+    // {
+    //     return $this->posts_game;
+    // }
 
     public function addPostsGame(Post $postsGame): self
     {
@@ -140,6 +150,18 @@ class Games
                 $postsGame->setGameId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReleaseD(): ?string
+    {
+        return $this->releaseD;
+    }
+
+    public function setReleaseD(?string $releaseD): self
+    {
+        $this->releaseD = $releaseD;
 
         return $this;
     }

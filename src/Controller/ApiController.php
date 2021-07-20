@@ -14,8 +14,10 @@ use App\Repository\UserRepository;
 use App\Service\FriendNormalize;
 use App\Service\GameNormalize;
 use App\Entity\Games;
+use App\Service\GamePostsNormalize;
 use ContainerZ3R1Te2\getGameNormalizeService;
 use App\Service\UserNormalize;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -36,6 +38,7 @@ class ApiController extends AbstractController
      */
     public function index(Request $request,UserNormalize $userNormalize, UserRepository $userRepository): Response
     {
+        $actualUser = $this->getUser();
 
         if($request->query->has('search')) {
             $result = $userRepository->findByTerm($request->query->get('search'));
@@ -43,6 +46,7 @@ class ApiController extends AbstractController
             $data = [];
 
             foreach($result as $user) {
+                
                 $data[] = $userNormalize->userNormalize($user);   
             }
     
@@ -53,8 +57,14 @@ class ApiController extends AbstractController
 
         $data = [];
 
+        
+
         foreach($result as $user) {
-            $data[] = $userNormalize->userNormalize($user);
+            
+            if ($user != $actualUser) {
+
+                $data[] = $userNormalize->userNormalize($user);
+            }
         }
 
         return $this->json($data);
@@ -69,14 +79,46 @@ class ApiController extends AbstractController
         return $this->json($userNormalize->userNormalize($user));
     }
 
+    /**
+     * @Route("/games/{id}", name="get_posts_games", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function showGamePosts(GamePostsNormalize $gamePostsNormalize, Games $game): Response
+    {
+        return $this->json($gamePostsNormalize->gameNormalize($game));
+    }
+
      /**
      * @Route("/friends/{id}", name="cfget", methods={"GET"}, requirements={"id": "\d+"})
      */
     public function showFriends(FriendNormalize $friendNormalize): Response
     {
+       
+
         $friends = $this->getUser();
 
         return $this->json($friendNormalize->friendNormalize($friends));
+    }
+
+     /**
+     * @Route("/friendsprueba/{id}", name="acfget", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function showFriendsPrueba(UserNormalize $userNormalize, Request $request,FriendNormalize $friendNormalize, UserRepository $userRepository): Response
+    {
+       
+        $user = $this->getUser();
+
+        $friends = [];
+
+
+        foreach ($user->getFriends() as $friend) {
+            array_push($friends, [$userNormalize->userNormalize(($friend))]);
+        }
+
+        foreach ($user->getUsers() as $friend) {
+            array_push($friends, [$userNormalize->userNormalize(($friend))]);
+        }
+
+        return $this->json($friends);
     }
     
 
@@ -91,7 +133,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/games", name="games", methods={"GET"})
      */
-    public function games(Request $request, GamesRepository $gamesRepository): Response
+    public function games(Request $request,GamePostsNormalize $gamePostsNormalize, GamesRepository $gamesRepository): Response
     {
         if($request->query->has('search')) {
             $result = $gamesRepository->findByTerm($request->query->get('search'));
@@ -99,7 +141,7 @@ class ApiController extends AbstractController
             $data = [];
 
             foreach($result as $game) {
-                $data[] = $game;   
+                $data[] = $gamePostsNormalize->gameNormalize($game);   
             }
     
             return $this->json($data);
@@ -107,7 +149,13 @@ class ApiController extends AbstractController
 
         $games = $gamesRepository->findAll();
 
-        return $this->json($games);
+        $data = [];
+
+            foreach($games as $game) {
+                $data[] = $gamePostsNormalize->gameNormalize($game);   
+            }
+    
+            return $this->json($data);
     }
 
     /**
@@ -125,7 +173,7 @@ class ApiController extends AbstractController
         $user->setUsernam($data->get('username'));
         $user->setEmail($data->get('email'));
         $user->setAvatar("emptyProfile.png");
-        $user->setBgImage("emptyProfile.png");
+        $user->setBgImage("no-image.png");
         $plainPassword = $data->get('password');
         
         $encoded = $encoder->encodePassword($user, $plainPassword);
@@ -147,8 +195,6 @@ class ApiController extends AbstractController
     public function addFavorite(Request $request, EntityManagerInterface $entityManager,UserRepository $userRepository): Response
     {
         $data = $request->request;
-
-        dump($data);
 
         $favorite = $userRepository->find($data->get('favoriteId'));
 
@@ -173,7 +219,9 @@ class ApiController extends AbstractController
     {
         $data = $request->request;
 
-        $now = new \DateTimeImmutable();
+        $now = new \DateTime();
+
+        $stringDate = $now->format("Y-m-d");
 
         $post = new Post();
 
@@ -183,7 +231,7 @@ class ApiController extends AbstractController
         $post->setContentText($data->get('newContentPost'));
         $post->setGameId($gameId);
         $post->setAuthorId($this->getUser());
-        $post->setStartAt($now);
+        $post->setCreatedAt($stringDate);
 
         if($request->files->has('postImage')) {
 
@@ -443,9 +491,34 @@ class ApiController extends AbstractController
 
         $post = $postRepository->find($data->get('postId'));
 
+        $post->setGameId(null);
+
         $this->getUser()->removePost($post);
 
         $entityManager->persist($post);
+
+        $entityManager->flush();
+
+        return $response->setStatusCode(Response::HTTP_ACCEPTED) ;
+        
+    }
+
+    /**
+     * @Route("/removeFavorite", name="remove_favorite", methods={"POST"})
+     */
+    public function removeFavorite(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
+    {
+        $response = new Response;
+
+        $data = $request->request;
+
+        $favorite = $userRepository->find($data->get('favoriteId'));
+
+        $user = $this->getUser();
+
+        $user->removeFriend($favorite);
+
+        $entityManager->persist($user);
 
         $entityManager->flush();
 

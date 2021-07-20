@@ -102,8 +102,9 @@ class UserNormalize {
 
 
             array_unshift($posts, [
+                'author' => $post->getAuthorId()->getUsernam(),
                 'title' => $post->getTitle(),    
-                'created_at' => $post->getStartAt(),
+                'created_at' => $post->getCreatedAt(),
                 'content_text' => $post->getContentText(),
                 'post_img' => $postImg,
                 'post_avatar' => $avatar,

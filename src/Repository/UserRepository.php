@@ -53,16 +53,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function findByEmail(string $term)
+    public function findFriend(string $term)
     {
-        $queryBuilder = $this->createQueryBuilder('e');
+        $queryBuilder = $this->getFriends()->createQueryBuilder('e');
 
         $queryBuilder->where(
             $queryBuilder->expr()->orX(
-                $queryBuilder->expr()->like('e.email' , ':email')
+                $queryBuilder->expr()->like('e.username' , ':search')
             )
         )
-        ->setParameter('term', '%'.$term.'%')
+        ->setParameter('search', '%'.$term.'%')
         ->orderBy('e.id', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();

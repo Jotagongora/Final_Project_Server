@@ -112,10 +112,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $target_messages;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $Token;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -527,18 +523,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $targetMessage->setTargetId(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->Token;
-    }
-
-    public function setToken(?string $Token): self
-    {
-        $this->Token = $Token;
 
         return $this;
     }

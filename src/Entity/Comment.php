@@ -37,6 +37,7 @@ class Comment
      */
     private $created_at;
 
+
     public function getId(): ?int
     {
         return $this->id;

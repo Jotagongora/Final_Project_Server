@@ -59,6 +59,11 @@ class Post
      */
     private $post_comments;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $created_at;
+
     public function __construct()
     {
         $this->likes = new ArrayCollection();
@@ -194,6 +199,18 @@ class Post
                 $postComment->setPostId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?string $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }
