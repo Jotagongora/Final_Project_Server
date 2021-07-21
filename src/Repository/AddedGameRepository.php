@@ -37,11 +37,13 @@ class AddedGameRepository extends ServiceEntityRepository
     */
 
     
-    public function findByGameId($id): ?AddedGame
+    public function findByGameId($game_id, $user_id): ?AddedGame
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.game_id = :id')
-            ->setParameter('id', $id)
+            ->Where('a.game_id = :gameid')
+            ->andWhere('a.user_id = :userid')
+            ->setParameter('gameid', $game_id)
+            ->setParameter('userid', $user_id)
             ->getQuery()
             ->getOneOrNullResult()
         ;

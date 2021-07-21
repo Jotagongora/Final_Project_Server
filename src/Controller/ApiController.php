@@ -326,7 +326,7 @@ class ApiController extends AbstractController
      /**
      * @Route("/addGame", name="add_game", methods={"POST"})
      */
-    public function addGameLibrary(Request $request, EntityManagerInterface $entityManager, GamesRepository $gamesRepository, AddedGameRepository $addedGameRepository): Response
+    public function addGameLibrary(Request $request, EntityManagerInterface $entityManager, GamesRepository $gamesRepository, AddedGameRepository $addedGameRepository, UserRepository $userRepository): Response
     {
         $response = new Response;
 
@@ -334,9 +334,11 @@ class ApiController extends AbstractController
 
         $gameId = $gamesRepository->find($data->get('gameId'));
 
-        $gameAlreadyExist = $addedGameRepository->findByGameId($gameId);
+        $user = $userRepository->find($this->getUser()->getId());
 
-        if ($gameAlreadyExist === null) {
+        $gameAlreadyExist = $addedGameRepository->findByGameId($gameId, $user);
+            
+        if ($gameAlreadyExist === null ) {
 
         $game = new AddedGame();
 
@@ -352,7 +354,7 @@ class ApiController extends AbstractController
         $entityManager->flush();
 
         } else {
-            return $this->json($data);
+            return $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
         }
 
         return $response->setStatusCode(Response::HTTP_CREATED) ;

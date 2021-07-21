@@ -103,6 +103,7 @@ class UserNormalize {
 
             array_unshift($posts, [
                 'author' => $post->getAuthorId()->getUsernam(),
+                'author_id' => $post->getAuthorId()->getId(),
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getCreatedAt(),
                 'content_text' => $post->getContentText(),

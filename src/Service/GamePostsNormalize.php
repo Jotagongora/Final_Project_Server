@@ -22,10 +22,11 @@ class GamePostsNormalize {
      */
     public function gameNormalize (Games $games): ? array {
         $gamePosts = [];
-        $comments = [];
         $user = [];
         
         foreach ($games->getPostsGame() as $post) {
+
+            $comments = [];
 
             foreach($post->getPostComments() as $comment) {
                 array_unshift($comments, [
@@ -52,13 +53,16 @@ class GamePostsNormalize {
             }
 
             $author = "";
+            $author_id = "";
             
             if ($user != null) {
                 $author = $user->getUsernam();
+                $author_id = $user->getId();
             }
 
             array_unshift($gamePosts, [
                 'author' => $author,
+                'author_id' => $author_id,
                 'title' => $post->getTitle(),    
                 'created_at' => $post->getCreatedAt(),
                 'content_text' => $post->getContentText(),
