@@ -29,6 +29,7 @@ class UserNormalize {
         
         foreach ($user->getAddedGames() as $game) {
             array_push($games, [
+                'added_id' => $game->getId(),
                 'id' => $game->getGameId()->getId(),
                 'title' => $game->getGameId()->getTitle(),
                 'image' => $game->getGameId()->getGameUrl(),

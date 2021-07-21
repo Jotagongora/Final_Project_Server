@@ -361,6 +361,37 @@ class ApiController extends AbstractController
         
     }
 
+     /**
+     * @Route("/removeGame", name="remove_game", methods={"POST"})
+     */
+    public function removeGameLibrary(Request $request, EntityManagerInterface $entityManager, GamesRepository $gamesRepository, AddedGameRepository $addedGameRepository, UserRepository $userRepository): Response
+    {
+        $response = new Response;
+
+        $data = $request->request;
+
+        $game = $addedGameRepository->find($data->get('gameId'));
+
+        dump($game);
+            
+        if ($game !== null ) {
+
+        $game->setUserId(null);
+        $game->setGameId(null);
+
+
+        $entityManager->persist($game);
+
+        $entityManager->flush();
+
+        } else {
+            return $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
+        }
+
+        return $response->setStatusCode(Response::HTTP_ACCEPTED) ;
+        
+    }
+
     /**
      * @Route("/edit", name="edit", methods={"POST"})
      */
@@ -449,7 +480,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/photos", name="photos", methods={"POST"})
      */
-    public function sendPhoto(Request $request, EntityManagerInterface $entityManager,UserNormalize $userNormalize, SluggerInterface $slug): Response
+    public function sendPhoto(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slug): Response
     { 
         
         if($request->files->has('file-upload')) {
